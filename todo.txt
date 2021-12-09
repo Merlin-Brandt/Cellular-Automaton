@@ -1,0 +1,3 @@
+Currently, parameters are just explored by setting random values.
+This is not at all optimal to find something interesting.
+Rather there should be a gui for changing the values for steering through the parameter space.
