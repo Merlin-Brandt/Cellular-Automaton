@@ -168,7 +168,8 @@ void cells_logic_save(char const *filename)
 {
 	FILE *file = fopen(filename, "w");
 	fprintf(file, "best_avg: %g\nbest_range: %g\ndie_speed: %g\nmin_life: %g\nlife_boost: %g\ndiagonal_neighbors: %i", 
-			cell_bestAvg, cell_best_range, cellDieSpeed, cell_minLife, cellLifeBoost, cell_diagNeighbors);
+			cell_bestAvg, cell_best_range, cellDieSpeed, 
+			cell_minLife, cellLifeBoost, cell_diagNeighbors);
 	fclose(file);
 }
 
@@ -180,12 +181,11 @@ void cells_logic_load(char const *filename)
 		int num = fscanf(file, "best_avg: %g best_range: %g die_speed: %g min_life: %g life_boost: %g diagonal_neighbors: %i", 
 					 &cell_bestAvg, &cell_best_range, &cellDieSpeed, &cell_minLife, &cellLifeBoost, &cell_diagNeighbors);
 		fclose(file);
-		
-		if (num != 5)
-			fprintf(stderr, "Failed to data from %s\n", filename);	
 	}
 	else
 		fprintf(stderr, "Failed to open '%s'\n", filename);	
+
+	cells_gen(rand(), 1);
 }
 
 void cells_logic()

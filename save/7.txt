@@ -1,0 +1,6 @@
+best_avg: 1.04166
+best_range: 0.751642
+die_speed: 0.436813
+min_life: 0.111034
+life_boost: 0.119386
+diagonal_neighbors: 0

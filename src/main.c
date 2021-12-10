@@ -1,8 +1,13 @@
 
+//readme a simple cellular automaton 
+//readme that extends Conway's Game of Life with floating point values.
+//readme 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <float.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -10,6 +15,7 @@
 #include "cells.h"
 #include "cells_render.h"
 #include "sleep.h"
+
 
 // initial window width and height
 const int winW = 800, winH = 600;
@@ -22,6 +28,23 @@ static int main_pause = 0;
 // the variable button_hold_button indicates which button is being held down.
 static int button_hold = 0;
 static int button_hold_button;
+
+// table of all floating point parameters which are saved with cells_logic_save()
+#define param_table_size 5
+float *param_table[] = {
+	&cell_bestAvg, 
+	&cell_best_range, 
+	&cellDieSpeed, 
+	&cell_minLife, 
+	&cellLifeBoost,
+};
+
+// currently user-selected parameter
+static int selected_param = 0;
+// currently user-defined parameter modification amount for each parameter in the parameter table
+float param_weights[param_table_size] = {
+	1.0f, 1.0f, 1.0f, 1.0f, 1.0f
+};
 
 // seed for random number generator
 unsigned masterSeed;
@@ -59,32 +82,16 @@ static void handleGlfwMouse(GLFWwindow *window, int button, int action, int mods
 // handler function for GLFW key event
 static void handleGlfwKey(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+	//readme controls:
+	//readme ---------
+	//readme 
 	switch (key)
 	{
-	case GLFW_KEY_SPACE:
-		if (main_pause)
-		{
-			if (action != GLFW_RELEASE)
-				cells_logic();
-		}
-		else if (action == GLFW_PRESS)
-		{
-			cells_clean();
-			cells_logic_rand(rand());
-			cells_gen(rand(), 0);
-		}
-		break;
-	case GLFW_KEY_BACKSPACE:
-		if (action == GLFW_PRESS)
-		{
-			cells_clean();
-			cells_gen(rand(), mods & GLFW_MOD_CONTROL);
-		}
-		break;
-	case GLFW_KEY_S:
-		if (action == GLFW_PRESS)
-			cells_logic_save("save/current.txt");
-		break;
+
+	//readme 1                        load file save/1.txt
+	//readme 2                        load file save/2.txt
+	//readme ...                      ...
+	//readme 
 	case GLFW_KEY_0:
 		if (action == GLFW_PRESS)
 			cells_logic_load("save/0.txt");
@@ -125,13 +132,96 @@ static void handleGlfwKey(GLFWwindow *window, int key, int scancode, int action,
 		if (action == GLFW_PRESS)
 			cells_logic_load("save/9.txt");
 		break;
+
+	//readme enter                    generate random pixels everywhere
+	case GLFW_KEY_ENTER:
+		if (action == GLFW_PRESS)
+		{
+			cells_clean();
+			cells_gen(rand(), !(mods & GLFW_MOD_CONTROL));
+		}
+		break;
+
+	//readme p                        pause/unpause simulation
+	//readme 	
 	case GLFW_KEY_P:
 		if (action == GLFW_PRESS)
 			main_pause = !main_pause;
 		break;
+		
+	//readme q,w,e,r,t,y,...,o,p      select parameter "q", "w", ...
+	//readme                          these parameters influence the pattern of the simulation.
+	//readme                          it is not important to know their actual meaning to explore the simulation
+	//readme 	
+	case GLFW_KEY_Q:
+		selected_param = 0;
+		break;
+	case GLFW_KEY_W:
+		selected_param = 1;
+		break;
+	case GLFW_KEY_E:
+		selected_param = 2;
+		break;
+	case GLFW_KEY_R:
+		selected_param = 3;
+		break;
+	case GLFW_KEY_T:
+		selected_param = 4;
+		break;
+	case GLFW_KEY_Y:
+		cell_diagNeighbors = !cell_diagNeighbors;
+		break;
+
+	//readme left-arrow               decrease selected parameter by current "weight" amount
+	//readme right-arrow              increase selected parameter by current "weight" amount (notice the changing pattern)
+	//readme 
+	case GLFW_KEY_LEFT:
+		*param_table[selected_param] -= param_weights[selected_param];
+		break;
+	case GLFW_KEY_RIGHT:
+		*param_table[selected_param] += param_weights[selected_param];
+		break;
+
+	//readme up-arrow                 increase the "weight" of left-arrow and right-arrow
+	//readme down-arrow               decrease the "weight" of left-arrow and right-arrow
+	//readme                          the larger the "weight", the larger the modification of the selected parameter
+	//readme 		
+	//readme 
+	case GLFW_KEY_DOWN:
+		param_weights[selected_param] *= 0.5f;
+		break;
+	case GLFW_KEY_UP: 
+		param_weights[selected_param] *= 2.0f;
+		break;
+
+	//readme space                    when paused: simulate single step
+	//readme                          else:        randomize parameters
+	//readme 			
+	case GLFW_KEY_SPACE:
+		if (main_pause)
+		{
+			if (action != GLFW_RELEASE)
+				cells_logic();
+		}
+		else if (action == GLFW_PRESS)
+		{
+			cells_clean();
+			cells_logic_rand(rand());
+			cells_gen(rand(), 0);
+		}
+		break;
+			
+	//readme escape                   exit simulation
 	case GLFW_KEY_ESCAPE:
 		if (action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, 1);
+		break;
+
+	//readme s                        save current parameters to save/current.txt
+	case GLFW_KEY_S:
+		if (action == GLFW_PRESS)
+			cells_logic_save("save/current.txt");
+		break;
 	}
 }
 

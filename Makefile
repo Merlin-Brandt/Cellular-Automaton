@@ -8,7 +8,7 @@ LDFLAGS=`pkg-config --static --libs glfw3` -lGLEW -lGLU -lGL
 OBJECTS_TMP=$(SOURCES:.cpp=.o)
 OBJECTS=$(OBJECTS_TMP:.c=.o)
 
-all: $(EXECUTABLE)
+all: $(EXECUTABLE) readme.txt
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) -o$(EXECUTABLE) $(OBJECTS) $(LDFLAGS)
@@ -25,6 +25,12 @@ clean:
 backup:
 	mkdir -p backup
 	cp -tbackup $(OBJECTS) $(EXECUTABLE) $(SOURCES)
+
+docs: readme.txt
+
+
+readme.txt: src/main.c src/cells.h src/cells.c src/cells_render.h src/cells_render.c
+	cat src/main.c src/cells.h src/cells.c src/cells_render.h src/cells_render.c | sed -n '/\/\/readme/p' | sed 's/\s*\/\/readme\s//' > readme.txt
 
 ycm-extra-config:
 	echo "flags = ['$(CFLAGS)']" > .ycm_extra_conf.py
