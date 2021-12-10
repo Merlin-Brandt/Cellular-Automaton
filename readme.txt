@@ -1,6 +1,8 @@
 a simple cellular automaton 
 that extends Conway's Game of Life with floating point values.
 
+in order to compile this project you need to have GLFW3 and GLEW installed.
+
 To view presets press one of the keys from 1 to 9.
 
 controls:

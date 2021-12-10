@@ -2,6 +2,10 @@
 //readme a simple cellular automaton 
 //readme that extends Conway's Game of Life with floating point values.
 //readme 
+//readme in order to compile this project you need to have GLFW3 and GLEW installed.
+//readme 
+//readme To view presets press one of the keys from 1 to 9.
+//readme 
 
 #include <stdlib.h>
 #include <stdio.h>
