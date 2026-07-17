@@ -1,6 +1,4 @@
-<video controls playsinline style="max-width: 100%; height: auto;">
-  <source src="demo.mp4" type="video/mp4">
-</video>
+![webp](demo.webp)
 
 <pre>
 a simple cellular automaton 
